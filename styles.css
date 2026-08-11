@@ -148,7 +148,7 @@ body {
   position: fixed;
   inset: 0;
   z-index: -1;
-  background: #0a1416 url("/assets/bg-car.png") center / cover no-repeat;
+  background: #0a1416 url("bg-car.png") center / cover no-repeat;
 }
 
 .bg__layer {
@@ -166,18 +166,18 @@ body {
 }
 
 .bg__layer--1 {
-  background-image: url("/assets/bg-car.png");
+  background-image: url("bg-car.png");
 }
 
 /* Sits the horizon a little lower so the player pill clears the car. */
 .bg__layer--2 {
   background-position: center 38%;
-  background-image: url("/assets/bg-car-2.png");
+  background-image: url("bg-car-2.png");
 }
 
 .bg__layer--3 {
   background-position: center;
-  background-image: url("/assets/bg-car-3.png");
+  background-image: url(bg-car-3.png");
 }
 
 /* Keeps white text legible over a bright photograph. */
