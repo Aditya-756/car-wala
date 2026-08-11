@@ -9,6 +9,10 @@
       content="नॉन-स्टॉप हिंदी हाईवे गाने — कार में बजने वाले 90s बॉलीवुड और देसी सफर वाले गाने."
     />
     <meta name="theme-color" content="#0a4a50" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="कार वाला" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 
     <!-- Absolute URLs — link previews drop relative ones. -->
     <meta property="og:type" content="website" />
@@ -45,7 +49,8 @@
 
     <link rel="canonical" href="https://hornokplease.xyz" />
 
-    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
+    <link rel="manifest" href="/manifest.webmanifest" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -84,6 +89,7 @@
     <div class="bg" aria-hidden="true">
       <div class="bg__layer bg__layer--1"></div>
       <div class="bg__layer bg__layer--2"></div>
+      <div class="bg__layer bg__layer--3"></div>
       <div class="bg__scrim"></div>
     </div>
 
@@ -234,6 +240,7 @@
             </button>
           </div>
         </section>
+
         <p class="signature" aria-label="Copyright">
           © your friendly neighbourhood aditya
         </p>

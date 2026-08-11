@@ -1,0 +1,19 @@
+{
+  "name": "कार वाला",
+  "short_name": "कार वाला",
+  "description": "कार में बजने वाले हिंदी हाईवे गाने.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#0a1416",
+  "theme_color": "#0a4a50",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/assets/favicon.svg",
+      "sizes": "64x64",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

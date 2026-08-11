@@ -148,7 +148,7 @@ body {
   position: fixed;
   inset: 0;
   z-index: -1;
-  background-color: #0a1416;
+  background: #0a1416 url("/assets/bg-car.png") center / cover no-repeat;
 }
 
 .bg__layer {
@@ -166,18 +166,18 @@ body {
 }
 
 .bg__layer--1 {
-  background-image: url("bg-car.png");
+  background-image: url("/assets/bg-car.png");
 }
 
-/* Sits the horizon a little lower so the player pill clears the car.
-   Only fetched once the page has settled — see deferSecondBackground()
-   in app.js. Nobody sees it until the first track change. */
+/* Sits the horizon a little lower so the player pill clears the car. */
 .bg__layer--2 {
   background-position: center 38%;
+  background-image: url("/assets/bg-car-2.png");
 }
 
-.bg__layer--2.is-armed {
-  background-image: url("/assets/bg-car.png");
+.bg__layer--3 {
+  background-position: center;
+  background-image: url("/assets/bg-car-3.png");
 }
 
 /* Keeps white text legible over a bright photograph. */
@@ -494,6 +494,7 @@ main {
   -webkit-backdrop-filter: blur(28px) saturate(150%);
   box-shadow: var(--shadow-glass);
 }
+
 .signature {
   margin: 0.65rem 0 0;
   font-family: var(--ui);
@@ -505,6 +506,7 @@ main {
   color: rgba(255, 255, 255, 0.58);
   text-shadow: 0 1px 8px rgba(0, 0, 0, 0.5);
 }
+
 /* Album art as a spinning record */
 .disc {
   position: relative;

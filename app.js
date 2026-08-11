@@ -68,6 +68,64 @@ function buildOrder() {
 
 const currentTrack = () => state.tracks[state.order[state.pos]];
 
+let mediaSessionReady = false;
+
+function updateMediaSession() {
+  if (!('mediaSession' in navigator)) return;
+  const t = currentTrack();
+  if (!t) return;
+
+  try {
+    navigator.mediaSession.metadata = new MediaMetadata({
+      title: t.title,
+      artist: t.artist || 'कार वाला',
+      album: 'कार वाला',
+      artwork: t.cover
+        ? [
+            { src: t.cover, sizes: '96x96', type: 'image/jpeg' },
+            { src: t.cover, sizes: '256x256', type: 'image/jpeg' },
+            { src: t.cover, sizes: '512x512', type: 'image/jpeg' },
+          ]
+        : [{ src: '/assets/favicon.svg', sizes: '64x64', type: 'image/svg+xml' }],
+    });
+    navigator.mediaSession.playbackState = state.playing ? 'playing' : 'paused';
+
+    if (!mediaSessionReady) {
+      const setAction = (name, handler) => {
+        try {
+          navigator.mediaSession.setActionHandler(name, handler);
+        } catch {
+          /* Some mobile browsers expose only part of the Media Session API. */
+        }
+      };
+
+      setAction('play', () => {
+        state.started = true;
+        yt?.playVideo?.();
+      });
+      setAction('pause', () => yt?.pauseVideo?.());
+      setAction('previoustrack', () => go(state.pos - 1));
+      setAction('nexttrack', () => go(state.pos + 1));
+      setAction('seekbackward', () => {
+        if (!yt) return;
+        yt.seekTo(Math.max(0, (yt.getCurrentTime() || 0) - 10), true);
+      });
+      setAction('seekforward', () => {
+        if (!yt) return;
+        const dur = yt.getDuration?.() || Infinity;
+        yt.seekTo(Math.min(dur, (yt.getCurrentTime() || 0) + 10), true);
+      });
+      setAction('seekto', (details) => {
+        if (!yt || typeof details.seekTime !== 'number') return;
+        yt.seekTo(details.seekTime, true);
+      });
+      mediaSessionReady = true;
+    }
+  } catch {
+    /* Media Session is best-effort; playback still works without it. */
+  }
+}
+
 /* ── Rendering ───────────────────────────────────────────────── */
 
 let swapTimer = null;
@@ -90,6 +148,7 @@ function renderTrack() {
   el.cover.src = t.cover || '';
   el.cover.alt = `${t.title} artwork`;
   el.cover.classList.toggle('is-letterboxed', (t.cover || '').includes('ytimg.com'));
+  updateMediaSession();
   // Only take over the tab title once someone is actually listening. Doing it
   // on load meant a crawler indexed whichever song the shuffle happened to
   // pick, so the page's title changed on every crawl.
@@ -135,23 +194,10 @@ function renderList() {
 const bgLayers = [...document.querySelectorAll('.bg__layer')];
 let bgIndex = 0;
 
-/* The second image isn't visible until the first track change, so keep it out
-   of the initial load and fetch it once the page is idle. Saves ~190KB on
-   first paint. Armed well before any rotation can happen. */
-function deferSecondBackground() {
-  const arm = () => bgLayers.slice(1).forEach((l) => l.classList.add('is-armed'));
-  const idle = window.requestIdleCallback || ((fn) => setTimeout(fn, 1200));
-  if (document.readyState === 'complete') idle(arm);
-  else window.addEventListener('load', () => idle(arm), { once: true });
-}
-
 function rotateBackground(to) {
   if (bgLayers.length < 2) return;
   const n = bgLayers.length;
   bgIndex = (((to ?? bgIndex + 1) % n) + n) % n;
-  // Arm only the layer we're about to show — arming them all here would
-  // undo the deferral on the very first call.
-  bgLayers[bgIndex].classList.add('is-armed');
   bgLayers.forEach((layer, i) => layer.classList.toggle('is-active', i === bgIndex));
 }
 
@@ -160,6 +206,7 @@ function renderPlaying(on) {
   state.playing = on;
   el.player.classList.toggle('is-playing', on);
   el.play.setAttribute('aria-label', on ? 'Pause' : 'Play');
+  updateMediaSession();
 }
 
 /* ── Playback ────────────────────────────────────────────────── */
@@ -274,6 +321,10 @@ el.seek.addEventListener('keydown', (e) => {
 /* ── Controls ────────────────────────────────────────────────── */
 
 el.play.addEventListener('click', toggle);
+el.player.addEventListener('click', (e) => {
+  if (e.target.closest('button, .seek')) return;
+  toggle();
+});
 el.prev.addEventListener('click', () => {
   // Standard player behaviour: restart the track unless you're near the top.
   if (yt && (yt.getCurrentTime() || 0) > 3) yt.seekTo(0, true);
@@ -666,7 +717,6 @@ window.onYouTubeIframeAPIReady = () => {
   // all loads, which costs more than the variety is worth — the rotation on
   // track change gives you that anyway.
   rotateBackground(0);
-  deferSecondBackground();
 
   const s = document.createElement('script');
   s.src = 'https://www.youtube.com/iframe_api';
