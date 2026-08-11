@@ -166,7 +166,7 @@ body {
 }
 
 .bg__layer--1 {
-  background-image: url("/assets/bg-car.png");
+  background-image: url("bg-car.png");
 }
 
 /* Sits the horizon a little lower so the player pill clears the car.
